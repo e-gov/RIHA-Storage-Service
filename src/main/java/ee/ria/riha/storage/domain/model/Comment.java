@@ -11,6 +11,13 @@ public class Comment {
     private Long comment_id;
     private Long comment_parent_id;
     private UUID infosystem_uuid;
+    private String title;
+    private String comment;
+    private String author_name;
+    private String author_personal_code;
+    private String organization_name;
+    private String organization_code;
+    private String status;
 
     public Long getComment_id() {
         return comment_id;
@@ -34,5 +41,61 @@ public class Comment {
 
     public void setInfosystem_uuid(UUID infosystem_uuid) {
         this.infosystem_uuid = infosystem_uuid;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getAuthor_name() {
+        return author_name;
+    }
+
+    public void setAuthor_name(String author_name) {
+        this.author_name = author_name;
+    }
+
+    public String getAuthor_personal_code() {
+        return author_personal_code;
+    }
+
+    public void setAuthor_personal_code(String author_personal_code) {
+        this.author_personal_code = author_personal_code;
+    }
+
+    public String getOrganization_name() {
+        return organization_name;
+    }
+
+    public void setOrganization_name(String organization_name) {
+        this.organization_name = organization_name;
+    }
+
+    public String getOrganization_code() {
+        return organization_code;
+    }
+
+    public void setOrganization_code(String organization_code) {
+        this.organization_code = organization_code;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
