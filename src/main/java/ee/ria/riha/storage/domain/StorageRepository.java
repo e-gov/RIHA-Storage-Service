@@ -1,6 +1,5 @@
 package ee.ria.riha.storage.domain;
 
-import ee.ria.riha.storage.domain.model.MainResource;
 import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
@@ -10,16 +9,16 @@ import java.util.List;
 /**
  * @author Valentin Suhnjov
  */
-public interface StorageRepository<I, E> {
+public interface StorageRepository<ID, T> {
 
-    List<I> add(E entity);
+    List<ID> add(T entity);
 
-    E get(I id);
+    T get(ID id);
 
-    void update(I id, E entity);
+    void update(ID id, T entity);
 
-    void remove(I id);
+    void remove(ID id);
 
-    PagedResponse<E> list(Pageable pageable, Filterable filterable);
+    PagedResponse<T> list(Pageable pageable, Filterable filterable);
 
 }

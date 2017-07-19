@@ -200,7 +200,10 @@ public class StorageClient {
     }
 
     /**
-     * Retrieves single record with given id.
+     * Retrieves single record with given id. Creates request in form
+     * <pre>
+     * request-parameters = "path=" resource-path "/" record-id "&op=get"
+     * </pre>
      *
      * @param path         data resource path
      * @param id           an id of a record
