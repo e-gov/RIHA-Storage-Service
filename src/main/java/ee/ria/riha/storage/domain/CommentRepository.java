@@ -25,7 +25,7 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
 
     @Override
     public List<Long> add(Comment entity) {
-        return null;
+        return storageClient.create(COMMENT_PATH, entity);
     }
 
     @Override

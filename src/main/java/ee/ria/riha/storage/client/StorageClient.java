@@ -183,12 +183,27 @@ public class StorageClient {
      * @return ids of created entities
      */
     public List<Long> create(String path, String data) {
+        return create(path, new JSONObject(data));
+    }
+
+    /**
+     * Stores json entity in the storage.
+     *
+     * @param path   data resource path
+     * @param entity JSON data
+     * @return ids of created entities
+     */
+    public List<Long> create(String path, Object entity) {
+        return create(path, new JSONObject(entity));
+    }
+
+    private List<Long> create(String path, JSONObject jsonObject) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl);
 
         JSONObject request = new JSONObject();
         request.put("op", "post");
         request.put("path", path);
-        request.put("data", new JSONObject(data));
+        request.put("data", jsonObject);
 
         ResponseEntity<List> responseEntity = restTemplate.postForEntity(uriBuilder.toUriString(),
                                                                          request.toString(),
@@ -196,6 +211,7 @@ public class StorageClient {
 
         List<Long> createdEntityIds = new ArrayList<>();
         responseEntity.getBody().forEach(id -> createdEntityIds.add(((Integer) id).longValue()));
+
         return createdEntityIds;
     }
 
