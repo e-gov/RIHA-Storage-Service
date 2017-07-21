@@ -1,5 +1,6 @@
 package ee.ria.riha.storage.domain.model;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -11,6 +12,7 @@ public class Comment {
     private Long comment_id;
     private Long comment_parent_id;
     private UUID infosystem_uuid;
+    private Date creation_date;
     private String title;
     private String comment;
     private String author_name;
@@ -42,6 +44,14 @@ public class Comment {
 
     public void setInfosystem_uuid(UUID infosystem_uuid) {
         this.infosystem_uuid = infosystem_uuid;
+    }
+
+    public Date getCreation_date() {
+        return creation_date;
+    }
+
+    public void setCreation_date(Date creation_date) {
+        this.creation_date = creation_date;
     }
 
     public String getTitle() {
