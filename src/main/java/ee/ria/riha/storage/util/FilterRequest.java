@@ -18,4 +18,9 @@ public class FilterRequest implements Filterable{
     private String sort;
     private String fields;
 
+    public FilterRequest addFilter(String filter) {
+        this.filter = this.filter == null ? filter : this.filter + "," + filter;
+        return this;
+    }
+
 }

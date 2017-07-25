@@ -23,6 +23,7 @@ import static ee.ria.riha.storage.client.OperationType.GET;
  */
 public class StorageClient {
 
+    public static final String MESSAGE_PATH_MUST_BE_SPECIFIED = "path must be specified";
     private RestTemplate restTemplate;
     private String baseUrl;
 
@@ -123,7 +124,7 @@ public class StorageClient {
      * @return retrieved resource
      */
     public <T> T find(String path, Pageable pageable, Filterable filterable, Class<T> responseType) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         UriComponentsBuilder uriBuilder = createRequestForPathAndOperation(path, GET);
 
@@ -162,7 +163,7 @@ public class StorageClient {
      * @see #find(String, Pageable, Filterable, Class)
      */
     public long count(String path, Filterable filterable) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         UriComponentsBuilder uriBuilder = createRequestForPathAndOperation(path, COUNT);
         if (filterable != null && filterable.getFilter() != null) {
@@ -183,12 +184,27 @@ public class StorageClient {
      * @return ids of created entities
      */
     public List<Long> create(String path, String data) {
+        return create(path, new JSONObject(data));
+    }
+
+    /**
+     * Stores json entity in the storage.
+     *
+     * @param path   data resource path
+     * @param entity JSON data
+     * @return ids of created entities
+     */
+    public List<Long> create(String path, Object entity) {
+        return create(path, new JSONObject(entity));
+    }
+
+    private List<Long> create(String path, JSONObject jsonObject) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl);
 
         JSONObject request = new JSONObject();
         request.put("op", "post");
         request.put("path", path);
-        request.put("data", new JSONObject(data));
+        request.put("data", jsonObject);
 
         ResponseEntity<List> responseEntity = restTemplate.postForEntity(uriBuilder.toUriString(),
                                                                          request.toString(),
@@ -196,11 +212,15 @@ public class StorageClient {
 
         List<Long> createdEntityIds = new ArrayList<>();
         responseEntity.getBody().forEach(id -> createdEntityIds.add(((Integer) id).longValue()));
+
         return createdEntityIds;
     }
 
     /**
-     * Retrieves single record with given id.
+     * Retrieves single record with given id. Creates request in form
+     * <pre>
+     * request-parameters = "path=" resource-path "/" record-id "&op=get"
+     * </pre>
      *
      * @param path         data resource path
      * @param id           an id of a record
@@ -223,7 +243,7 @@ public class StorageClient {
      */
     public <T> PagedResponse<T> list(String path, Pageable pageable, Filterable filterable,
                                      Class<? extends List<T>> responseType) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         PagedResponse<T> response = new PagedResponse<>(pageable);
 
@@ -247,7 +267,7 @@ public class StorageClient {
      * @return paged response
      */
     public PagedResponse<String> list(String path, Pageable pageable, Filterable filterable) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         PagedResponse<String> response = new PagedResponse<>(pageable);
 
