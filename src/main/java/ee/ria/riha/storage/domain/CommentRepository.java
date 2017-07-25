@@ -15,6 +15,7 @@ import java.util.List;
 public class CommentRepository implements StorageRepository<Long, Comment> {
 
     private static final String COMMENT_PATH = "db/comment";
+    private static final String NOT_IMPLEMENTED = "Not implemented";
 
     private final StorageClient storageClient;
 
@@ -24,22 +25,22 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
 
     @Override
     public List<Long> add(Comment entity) {
-        return null;
+        return storageClient.create(COMMENT_PATH, entity);
     }
 
     @Override
     public Comment get(Long id) {
-        return null;
+        return storageClient.get(COMMENT_PATH, id, Comment.class);
     }
 
     @Override
     public void update(Long id, Comment entity) {
-
+        throw new RuntimeException(NOT_IMPLEMENTED);
     }
 
     @Override
     public void remove(Long id) {
-
+        throw new RuntimeException(NOT_IMPLEMENTED);
     }
 
     @Override
