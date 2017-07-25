@@ -23,6 +23,7 @@ import static ee.ria.riha.storage.client.OperationType.GET;
  */
 public class StorageClient {
 
+    public static final String MESSAGE_PATH_MUST_BE_SPECIFIED = "path must be specified";
     private RestTemplate restTemplate;
     private String baseUrl;
 
@@ -123,7 +124,7 @@ public class StorageClient {
      * @return retrieved resource
      */
     public <T> T find(String path, Pageable pageable, Filterable filterable, Class<T> responseType) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         UriComponentsBuilder uriBuilder = createRequestForPathAndOperation(path, GET);
 
@@ -162,7 +163,7 @@ public class StorageClient {
      * @see #find(String, Pageable, Filterable, Class)
      */
     public long count(String path, Filterable filterable) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         UriComponentsBuilder uriBuilder = createRequestForPathAndOperation(path, COUNT);
         if (filterable != null && filterable.getFilter() != null) {
@@ -242,7 +243,7 @@ public class StorageClient {
      */
     public <T> PagedResponse<T> list(String path, Pageable pageable, Filterable filterable,
                                      Class<? extends List<T>> responseType) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         PagedResponse<T> response = new PagedResponse<>(pageable);
 
@@ -266,7 +267,7 @@ public class StorageClient {
      * @return paged response
      */
     public PagedResponse<String> list(String path, Pageable pageable, Filterable filterable) {
-        Assert.hasText(path, "path must be specified");
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         PagedResponse<String> response = new PagedResponse<>(pageable);
 

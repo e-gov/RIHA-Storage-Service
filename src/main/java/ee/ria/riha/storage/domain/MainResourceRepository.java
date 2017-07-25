@@ -6,9 +6,7 @@ import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.PageRequest;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,7 @@ public class MainResourceRepository implements StorageRepository<Long, MainResou
     @Override
     public MainResource get(Long id) {
         String infoSystem = storageClient.get(MAIN_RESOURCE_PATH, id, String.class);
-        return infoSystem != null && ! infoSystem.isEmpty() ? new MainResource(infoSystem) : null;
+        return infoSystem != null && !infoSystem.isEmpty() ? new MainResource(infoSystem) : null;
     }
 
     @Override

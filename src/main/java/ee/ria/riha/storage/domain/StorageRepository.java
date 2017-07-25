@@ -9,15 +9,15 @@ import java.util.List;
 /**
  * @author Valentin Suhnjov
  */
-public interface StorageRepository<ID, T> {
+public interface StorageRepository<K, T> {
 
-    List<ID> add(T entity);
+    List<K> add(T entity);
 
-    T get(ID id);
+    T get(K id);
 
-    void update(ID id, T entity);
+    void update(K id, T entity);
 
-    void remove(ID id);
+    void remove(K id);
 
     PagedResponse<T> list(Pageable pageable, Filterable filterable);
 
