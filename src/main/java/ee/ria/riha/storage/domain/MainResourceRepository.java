@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class MainResourceRepository implements StorageRepository<Long, MainResource> {
 
     private static final String MAIN_RESOURCE_PATH = "db/main_resource";
+    private static final String MAIN_RESOURCE_VIEW_PATH = "db/main_resource_view";
     private static final String NOT_IMPLEMENTED = "Not implemented";
 
     private final StorageClient storageClient;
@@ -47,7 +48,7 @@ public class MainResourceRepository implements StorageRepository<Long, MainResou
 
     @Override
     public PagedResponse<MainResource> list(Pageable pageable, Filterable filterable) {
-        PagedResponse<String> response = storageClient.list(MAIN_RESOURCE_PATH, pageable, filterable);
+        PagedResponse<String> response = storageClient.list(MAIN_RESOURCE_VIEW_PATH, pageable, filterable);
 
         return new PagedResponse<>(new PageRequest(response.getPage(), response.getSize()),
                                    response.getTotalElements(),
