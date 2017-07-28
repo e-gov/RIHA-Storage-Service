@@ -1,16 +1,21 @@
 package ee.ria.riha.storage.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import static ee.ria.riha.storage.client.OperationType.COUNT;
@@ -46,10 +51,10 @@ public class StorageClient {
      * Convenient overload of {@link #find(String, Pageable, Class)}
      *
      * @param path         data resource path
-     * @param responseType the type of the return value
-     * @return list of JSON formatted resource descriptions
+     * @param responseType the type of the returned resource
+     * @return list of found resources
      */
-    public <T> T find(String path, Class<T> responseType) {
+    public <T> List<T> find(String path, Class<T> responseType) {
         return find(path, null, null, responseType);
     }
 
@@ -58,10 +63,10 @@ public class StorageClient {
      *
      * @param path         data resource path
      * @param pageable     pagination
-     * @param responseType the type of the return value
-     * @return list of JSON formatted resource descriptions
+     * @param responseType the type of the returned resource
+     * @return list of found resources
      */
-    public <T> T find(String path, Pageable pageable, Class<T> responseType) {
+    public <T> List<T> find(String path, Pageable pageable, Class<T> responseType) {
         return find(path, pageable, null, responseType);
     }
 
@@ -70,10 +75,10 @@ public class StorageClient {
      *
      * @param path         data resource path
      * @param filterable   filtering, sorting and fields
-     * @param responseType the type of the return value
-     * @return list of JSON formatted resource descriptions
+     * @param responseType the type of the returned resource
+     * @return list of found resources
      */
-    public <T> T find(String path, Filterable filterable, Class<T> responseType) {
+    public <T> List<T> find(String path, Filterable filterable, Class<T> responseType) {
         return find(path, null, filterable, responseType);
     }
 
@@ -120,10 +125,10 @@ public class StorageClient {
      * @param path         data resource path
      * @param pageable     pagination
      * @param filterable   filtering, sorting and fields
-     * @param responseType the type of the return value
-     * @return retrieved resource
+     * @param responseType the type of the returned resource
+     * @return list of found resources
      */
-    public <T> T find(String path, Pageable pageable, Filterable filterable, Class<T> responseType) {
+    public <T> List<T> find(String path, Pageable pageable, Filterable filterable, final Class<T> responseType) {
         Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         UriComponentsBuilder uriBuilder = createRequestForPathAndOperation(path, GET);
@@ -145,7 +150,19 @@ public class StorageClient {
             }
         }
 
-        return restTemplate.getForObject(uriBuilder.build(false).toUriString(), responseType);
+        ParameterizedTypeReference<List<T>> listResponseType = new ParameterizedTypeReference<List<T>>() {
+            @Override
+            public Type getType() {
+                return new ParameterizedListTypeReference((ParameterizedType) super.getType(),
+                                                          new Type[]{responseType});
+            }
+        };
+
+        ResponseEntity<List<T>> responseEntity = restTemplate.exchange(uriBuilder.build(false).toUriString(),
+                                                                       HttpMethod.GET, null,
+                                                                       listResponseType);
+
+        return responseEntity.getBody();
     }
 
     private UriComponentsBuilder createRequestForPathAndOperation(String path, OperationType operation) {
@@ -170,50 +187,34 @@ public class StorageClient {
             uriBuilder.queryParam("filter", filterable.getFilter());
         }
 
-        String responseString = restTemplate.getForObject(uriBuilder.build(false).toUriString(), String.class);
-        JSONObject jsonObject = new JSONObject(responseString);
+        JsonNode response = restTemplate.getForObject(uriBuilder.build(false).toUriString(), JsonNode.class);
 
-        return jsonObject.getLong("ok");
-    }
-
-    /**
-     * Stores json data in the storage.
-     *
-     * @param path data resource path
-     * @param data JSON data
-     * @return ids of created entities
-     */
-    public List<Long> create(String path, String data) {
-        return create(path, new JSONObject(data));
+        return response.get("ok").asLong();
     }
 
     /**
      * Stores json entity in the storage.
      *
      * @param path   data resource path
-     * @param entity JSON data
+     * @param entity entity model
      * @return ids of created entities
      */
     public List<Long> create(String path, Object entity) {
-        return create(path, new JSONObject(entity));
-    }
-
-    private List<Long> create(String path, JSONObject jsonObject) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl);
 
-        JSONObject request = new JSONObject();
+        ObjectNode request = JsonNodeFactory.instance.objectNode();
         request.put("op", "post");
         request.put("path", path);
-        request.put("data", jsonObject);
+        request.putPOJO("data", entity);
 
-        ResponseEntity<List> responseEntity = restTemplate.postForEntity(uriBuilder.toUriString(),
-                                                                         request.toString(),
-                                                                         List.class);
+        ResponseEntity<List<Long>> responseEntity = restTemplate.exchange(uriBuilder.toUriString(),
+                                                                          HttpMethod.POST,
+                                                                          new HttpEntity<Object>(request),
+                                                                          new ParameterizedTypeReference<List<Long>>() {
+                                                                          }
+        );
 
-        List<Long> createdEntityIds = new ArrayList<>();
-        responseEntity.getBody().forEach(id -> createdEntityIds.add(((Integer) id).longValue()));
-
-        return createdEntityIds;
+        return responseEntity.getBody();
     }
 
     /**
@@ -242,7 +243,7 @@ public class StorageClient {
      * @return paged response
      */
     public <T> PagedResponse<T> list(String path, Pageable pageable, Filterable filterable,
-                                     Class<? extends List<T>> responseType) {
+                                     Class<T> responseType) {
         Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
 
         PagedResponse<T> response = new PagedResponse<>(pageable);
@@ -257,30 +258,30 @@ public class StorageClient {
         return response;
     }
 
-    /**
-     * Retrieve paged records in form of JSON array. Concrete response type is not required as response may be
-     * represented by JSON with arbitrary structure.
-     *
-     * @param path       data resource path
-     * @param pageable   paging information
-     * @param filterable filtering information
-     * @return paged response
-     */
-    public PagedResponse<String> list(String path, Pageable pageable, Filterable filterable) {
-        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
+    public class ParameterizedListTypeReference implements ParameterizedType {
+        private ParameterizedType delegate;
+        private Type[] actualTypeArguments;
 
-        PagedResponse<String> response = new PagedResponse<>(pageable);
-
-        long totalElements = count(path, filterable);
-        response.setTotalElements(totalElements);
-
-        if (totalElements > 0) {
-            String json = find(path, pageable, filterable, String.class);
-            JSONArray jsonArray = new JSONArray(json);
-            jsonArray.forEach(item -> response.getContent().add(item.toString()));
+        ParameterizedListTypeReference(ParameterizedType delegate, Type[] actualTypeArguments) {
+            this.delegate = delegate;
+            this.actualTypeArguments = actualTypeArguments;
         }
 
-        return response;
+        @Override
+        public Type[] getActualTypeArguments() {
+            return actualTypeArguments;
+        }
+
+        @Override
+        public Type getRawType() {
+            return delegate.getRawType();
+        }
+
+        @Override
+        public Type getOwnerType() {
+            return delegate.getOwnerType();
+        }
+
     }
 
 }
