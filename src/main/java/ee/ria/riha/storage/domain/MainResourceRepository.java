@@ -48,6 +48,13 @@ public class MainResourceRepository implements StorageRepository<Long, MainResou
     }
 
     @Override
+    public List<MainResource> find(Filterable filterable) {
+        return storageClient.find(MAIN_RESOURCE_VIEW_PATH, filterable, JsonNode.class).stream()
+                .map(json -> new MainResource(json.toString()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<Long> add(MainResource mainResource) {
         ValueNode jsonNode = JsonNodeFactory.instance.rawValueNode(new RawValue(mainResource.getJson_context()));
         return storageClient.create(MAIN_RESOURCE_PATH, jsonNode);

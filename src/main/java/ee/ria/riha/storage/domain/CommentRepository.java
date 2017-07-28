@@ -35,6 +35,11 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
     }
 
     @Override
+    public List<Comment> find(Filterable filterable) {
+        return storageClient.find(COMMENT_PATH, filterable, Comment.class);
+    }
+
+    @Override
     public List<Long> add(Comment entity) {
         return storageClient.create(COMMENT_PATH, entity);
     }

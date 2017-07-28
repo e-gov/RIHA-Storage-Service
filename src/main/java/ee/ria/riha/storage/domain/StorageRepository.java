@@ -31,6 +31,14 @@ public interface StorageRepository<K, T> {
     T get(K id);
 
     /**
+     * Find resource applying filtering and sorting
+     *
+     * @param filterable filter definition
+     * @return all found resources
+     */
+    List<T> find(Filterable filterable);
+
+    /**
      * Creates resource
      *
      * @param entity resource model
