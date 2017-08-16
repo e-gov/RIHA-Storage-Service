@@ -18,8 +18,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import static ee.ria.riha.storage.client.OperationType.COUNT;
-import static ee.ria.riha.storage.client.OperationType.GET;
+import static ee.ria.riha.storage.client.OperationType.*;
 
 /**
  * Makes requests to RIHA-Storage for data.
@@ -200,18 +199,23 @@ public class StorageClient {
      * @return ids of created entities
      */
     public List<Long> create(String path, Object entity) {
+        return postRequest(path, entity, POST, new ParameterizedTypeReference<List<Long>>() {
+        });
+    }
+
+    private <T> T postRequest(String path, Object entity, OperationType operationType,
+                              ParameterizedTypeReference<T> responseType) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl);
 
         ObjectNode request = JsonNodeFactory.instance.objectNode();
-        request.put("op", "post");
+        request.put("op", operationType.getValue());
         request.put("path", path);
         request.putPOJO("data", entity);
 
-        ResponseEntity<List<Long>> responseEntity = restTemplate.exchange(uriBuilder.toUriString(),
-                                                                          HttpMethod.POST,
-                                                                          new HttpEntity<Object>(request),
-                                                                          new ParameterizedTypeReference<List<Long>>() {
-                                                                          }
+        ResponseEntity<T> responseEntity = restTemplate.exchange(uriBuilder.toUriString(),
+                                                                 HttpMethod.POST,
+                                                                 new HttpEntity<Object>(request),
+                                                                 responseType
         );
 
         return responseEntity.getBody();
@@ -256,6 +260,22 @@ public class StorageClient {
         }
 
         return response;
+    }
+
+    /**
+     * Updates existing entity in the storage.
+     *
+     * @param path   data resource path
+     * @param id     an id of a record
+     * @param entity entity model  @return ids of updated entitites
+     * @return number of updated records
+     */
+    public Long update(String path, Long id, Object entity) {
+        JsonNode response = postRequest(path + "/" + id.toString(), entity, PUT,
+                                        new ParameterizedTypeReference<JsonNode>() {
+                                        });
+
+        return response.get("ok").asLong();
     }
 
     public class ParameterizedListTypeReference implements ParameterizedType {

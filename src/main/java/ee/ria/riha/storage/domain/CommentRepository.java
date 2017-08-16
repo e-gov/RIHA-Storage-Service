@@ -46,7 +46,7 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
 
     @Override
     public void update(Long id, Comment entity) {
-        throw new RuntimeException(NOT_IMPLEMENTED);
+        storageClient.update(COMMENT_PATH, id, entity);
     }
 
     @Override
