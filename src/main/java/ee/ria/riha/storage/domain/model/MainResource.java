@@ -1,32 +1,27 @@
 package ee.ria.riha.storage.domain.model;
 
-import org.json.JSONObject;
-import org.springframework.util.Assert;
-
 /**
- * Holds Information System data as a {@link JSONObject}.
+ * Holds Information System data as json string.
  *
  * @author Valentin Suhnjov
  */
 public class MainResource {
 
-    private JSONObject jsonObject = new JSONObject();
+    private String json_context;
 
     public MainResource() {
-        this("{}");
     }
 
-    public MainResource(JSONObject jsonObject) {
-        Assert.notNull(jsonObject);
-        this.jsonObject = jsonObject;
+    public MainResource(String json_context) {
+        this.json_context = json_context;
     }
 
-    public MainResource(String json) {
-        this(new JSONObject(json));
+    public String getJson_context() {
+        return json_context;
     }
 
-    public JSONObject getJsonObject() {
-        return jsonObject;
+    public void setJson_context(String json_context) {
+        this.json_context = json_context;
     }
 
 }

@@ -6,10 +6,11 @@ import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Makes calls against RIHA-Storage and performs translation between comment resources and Comment entities
+ *
  * @author Valentin Suhnjov
  */
 public class CommentRepository implements StorageRepository<Long, Comment> {
@@ -24,8 +25,8 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
     }
 
     @Override
-    public List<Long> add(Comment entity) {
-        return storageClient.create(COMMENT_PATH, entity);
+    public PagedResponse<Comment> list(Pageable pageable, Filterable filterable) {
+        return storageClient.list(COMMENT_PATH, pageable, filterable, Comment.class);
     }
 
     @Override
@@ -34,8 +35,18 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
     }
 
     @Override
+    public List<Comment> find(Filterable filterable) {
+        return storageClient.find(COMMENT_PATH, filterable, Comment.class);
+    }
+
+    @Override
+    public List<Long> add(Comment entity) {
+        return storageClient.create(COMMENT_PATH, entity);
+    }
+
+    @Override
     public void update(Long id, Comment entity) {
-        throw new RuntimeException(NOT_IMPLEMENTED);
+        storageClient.update(COMMENT_PATH, id, entity);
     }
 
     @Override
@@ -43,11 +54,4 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
         throw new RuntimeException(NOT_IMPLEMENTED);
     }
 
-    @Override
-    public PagedResponse<Comment> list(Pageable pageable, Filterable filterable) {
-        return storageClient.list(COMMENT_PATH, pageable, filterable, CommentList.class);
-    }
-
-    private static class CommentList extends ArrayList<Comment> {
-    }
 }

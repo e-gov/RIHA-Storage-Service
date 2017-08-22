@@ -5,6 +5,8 @@ package ee.ria.riha.storage.client;
  */
 public enum OperationType {
     GET("get"),
+    PUT("put"),
+    POST("post"),
     COUNT("count");
 
     private final String value;

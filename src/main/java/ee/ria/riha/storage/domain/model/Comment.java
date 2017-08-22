@@ -21,6 +21,7 @@ public class Comment {
     private String organization_code;
     private String status;
     private String type;
+    private String sub_type;
 
     public Long getComment_id() {
         return comment_id;
@@ -118,4 +119,11 @@ public class Comment {
         this.type = type;
     }
 
+    public String getSub_type() {
+        return sub_type;
+    }
+
+    public void setSub_type(String sub_type) {
+        this.sub_type = sub_type;
+    }
 }
