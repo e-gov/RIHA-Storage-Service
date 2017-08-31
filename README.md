@@ -1,3 +1,5 @@
+![Estonian Information System Authority](https://github.com/e-gov/RIHA-Frontend/raw/master/logo/gov-CVI/lions.png "Estonian Information System Authority") ![European Regional Development Fund](https://github.com/e-gov/RIHA-Frontend/raw/master/logo/EU/EU.png "European Regional Development Fund")
+
 # RIHA-Storage-Client
 
 StorageClient is a library for data exchange with [RIHA-Storage](https://github.com/e-gov/RIHA-Storage) and reused by other components like [RIHA-Browser](https://github.com/e-gov/RIHA-Browser), [RIHA-Producer](https://github.com/e-gov/RIHA-Producer) and [RIHA-Approver](https://github.com/e-gov/RIHA-Approver).
