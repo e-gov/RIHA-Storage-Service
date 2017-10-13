@@ -76,11 +76,17 @@ public class FileRepository {
             return builder.build();
         }
 
-        builder.header(HttpHeaders.CONTENT_LENGTH, conn.getHeaderField(HttpHeaders.CONTENT_LENGTH));
-        builder.header(HttpHeaders.CONTENT_TYPE, conn.getHeaderField(HttpHeaders.CONTENT_TYPE));
-        builder.header(HttpHeaders.CONTENT_DISPOSITION, conn.getHeaderField(HttpHeaders.CONTENT_DISPOSITION));
+        copyHeaderIfPresent(conn, builder, HttpHeaders.CONTENT_LENGTH);
+        copyHeaderIfPresent(conn, builder, HttpHeaders.CONTENT_TYPE);
+        copyHeaderIfPresent(conn, builder, HttpHeaders.CONTENT_DISPOSITION);
 
         return builder.body(new InputStreamResource(conn.getInputStream()));
+    }
+
+    private void copyHeaderIfPresent(HttpURLConnection urlConnection, ResponseEntity.BodyBuilder responseBuilder, String headerName) {
+        if (urlConnection.getHeaderField(headerName) != null) {
+            responseBuilder.header(headerName, urlConnection.getHeaderField(headerName));
+        }
     }
 
     private static class MultipartInputStreamFileResource extends InputStreamResource {
