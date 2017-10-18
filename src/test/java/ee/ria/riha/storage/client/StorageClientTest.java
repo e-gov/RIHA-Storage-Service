@@ -36,7 +36,7 @@ public class StorageClientTest {
     private StorageClient storageClient = new StorageClient(restTemplate, URL);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         List<String> response = new ArrayList<>();
         response.add("{\n" +
                              "  \"uri\": \"urn:fdc:riha.eesti.ee:2016:infosystem:350811-test\",\n" +
@@ -54,7 +54,7 @@ public class StorageClientTest {
     }
 
     @Test
-    public void dividesResponseArrayToListOfInfoSystemJSONs() throws Exception {
+    public void dividesResponseArrayToListOfInfoSystemJSONs() {
         List<String> infoSystems = storageClient.find("path", String.class);
 
         assertThat(infoSystems, hasSize(2));
