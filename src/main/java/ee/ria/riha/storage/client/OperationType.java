@@ -7,6 +7,7 @@ public enum OperationType {
     GET("get"),
     PUT("put"),
     POST("post"),
+    DELETE("delete"),
     COUNT("count");
 
     private final String value;
