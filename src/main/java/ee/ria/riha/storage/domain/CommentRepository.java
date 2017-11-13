@@ -5,22 +5,23 @@ import ee.ria.riha.storage.domain.model.Comment;
 import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
+import org.springframework.util.Assert;
 
 import java.util.List;
 
 /**
- * Makes calls against RIHA-Storage and performs translation between comment resources and Comment entities
+ * Makes calls against RIHA-Storage and performs various operations on {@link Comment} entities.
  *
  * @author Valentin Suhnjov
  */
 public class CommentRepository implements StorageRepository<Long, Comment> {
 
     private static final String COMMENT_PATH = "db/comment";
-    private static final String NOT_IMPLEMENTED = "Not implemented";
 
     private final StorageClient storageClient;
 
     public CommentRepository(StorageClient storageClient) {
+        Assert.notNull(storageClient, "Storage client must be provided");
         this.storageClient = storageClient;
     }
 
@@ -51,7 +52,7 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
 
     @Override
     public void remove(Long id) {
-        throw new RuntimeException(NOT_IMPLEMENTED);
+        storageClient.remove(COMMENT_PATH, id);
     }
 
 }
