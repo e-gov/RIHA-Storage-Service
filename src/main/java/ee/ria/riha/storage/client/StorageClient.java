@@ -48,7 +48,7 @@ public class StorageClient {
     }
 
     /**
-     * Convenient overload of {@link #find(String, Pageable, Class)}
+     * Convenient overload of {@link #find(String, Pageable, Filterable, Class)}
      *
      * @param path         data resource path
      * @param responseType the type of the returned resource
@@ -59,7 +59,7 @@ public class StorageClient {
     }
 
     /**
-     * Convenient overload of {@link #find(String, Pageable, Class)}
+     * Convenient overload of {@link #find(String, Pageable, Filterable, Class)}
      *
      * @param path         data resource path
      * @param pageable     pagination
@@ -103,6 +103,8 @@ public class StorageClient {
      *                      | "null_or_<="
      *                      | "isnull"
      *                      | "isnotnull"
+     *                      | "jilike"
+     *                      | "jarr"
      * property-value       = string            ; filter value
      * Example: name,like,malis,owner,=,70001484
      * </pre>
@@ -282,10 +284,10 @@ public class StorageClient {
     }
 
     /**
-     * Removes existing entity in the storage by provided id
+     * Removes existing entity in the storage using provided id
      *
-     * @param path
-     * @param id
+     * @param path data resource path
+     * @param id   ad id of a record
      * @return number of deleted records
      */
     public Long remove(String path, Long id) {
