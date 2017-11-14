@@ -10,6 +10,7 @@ import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.PageRequest;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
+import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,24 +24,24 @@ public class MainResourceRepository implements StorageRepository<Long, MainResou
 
     private static final String MAIN_RESOURCE_PATH = "db/main_resource";
     private static final String MAIN_RESOURCE_VIEW_PATH = "db/main_resource_view";
-    private static final String NOT_IMPLEMENTED = "Not implemented";
 
     private final StorageClient storageClient;
 
     public MainResourceRepository(StorageClient storageClient) {
+        Assert.notNull(storageClient, "Storage client must be provided");
         this.storageClient = storageClient;
     }
 
     @Override
     public PagedResponse<MainResource> list(Pageable pageable, Filterable filterable) {
         PagedResponse<JsonNode> response = storageClient.list(MAIN_RESOURCE_VIEW_PATH, pageable, filterable,
-                                                              JsonNode.class);
+                JsonNode.class);
 
         return new PagedResponse<>(new PageRequest(response.getPage(), response.getSize()),
-                                   response.getTotalElements(),
-                                   response.getContent().stream()
-                                           .map(json -> new MainResource(json.toString()))
-                                           .collect(Collectors.toList()));
+                response.getTotalElements(),
+                response.getContent().stream()
+                        .map(json -> new MainResource(json.toString()))
+                        .collect(Collectors.toList()));
     }
 
     @Override
@@ -64,12 +65,12 @@ public class MainResourceRepository implements StorageRepository<Long, MainResou
 
     @Override
     public void update(Long id, MainResource mainResource) {
-        throw new RuntimeException(NOT_IMPLEMENTED);
+        throw new UnsupportedOperationException("Entity can not be updated");
     }
 
     @Override
     public void remove(Long id) {
-        throw new RuntimeException(NOT_IMPLEMENTED);
+        throw new UnsupportedOperationException("Entity can not be deleted");
     }
 
 }

@@ -27,7 +27,8 @@ import static ee.ria.riha.storage.client.OperationType.*;
  */
 public class StorageClient {
 
-    public static final String MESSAGE_PATH_MUST_BE_SPECIFIED = "path must be specified";
+    private static final String MESSAGE_PATH_MUST_BE_SPECIFIED = "path must be specified";
+
     private RestTemplate restTemplate;
     private String baseUrl;
 
@@ -47,7 +48,7 @@ public class StorageClient {
     }
 
     /**
-     * Convenient overload of {@link #find(String, Pageable, Class)}
+     * Convenient overload of {@link #find(String, Pageable, Filterable, Class)}
      *
      * @param path         data resource path
      * @param responseType the type of the returned resource
@@ -58,7 +59,7 @@ public class StorageClient {
     }
 
     /**
-     * Convenient overload of {@link #find(String, Pageable, Class)}
+     * Convenient overload of {@link #find(String, Pageable, Filterable, Class)}
      *
      * @param path         data resource path
      * @param pageable     pagination
@@ -102,6 +103,8 @@ public class StorageClient {
      *                      | "null_or_<="
      *                      | "isnull"
      *                      | "isnotnull"
+     *                      | "jilike"
+     *                      | "jarr"
      * property-value       = string            ; filter value
      * Example: name,like,malis,owner,=,70001484
      * </pre>
@@ -153,13 +156,13 @@ public class StorageClient {
             @Override
             public Type getType() {
                 return new ParameterizedListTypeReference((ParameterizedType) super.getType(),
-                                                          new Type[]{responseType});
+                        new Type[]{responseType});
             }
         };
 
         ResponseEntity<List<T>> responseEntity = restTemplate.exchange(uriBuilder.build(false).toUriString(),
-                                                                       HttpMethod.GET, null,
-                                                                       listResponseType);
+                HttpMethod.GET, null,
+                listResponseType);
 
         return responseEntity.getBody();
     }
@@ -210,12 +213,14 @@ public class StorageClient {
         ObjectNode request = JsonNodeFactory.instance.objectNode();
         request.put("op", operationType.getValue());
         request.put("path", path);
-        request.putPOJO("data", entity);
+        if (entity != null) {
+            request.putPOJO("data", entity);
+        }
 
         ResponseEntity<T> responseEntity = restTemplate.exchange(uriBuilder.toUriString(),
-                                                                 HttpMethod.POST,
-                                                                 new HttpEntity<Object>(request),
-                                                                 responseType
+                HttpMethod.POST,
+                new HttpEntity<Object>(request),
+                responseType
         );
 
         return responseEntity.getBody();
@@ -272,8 +277,23 @@ public class StorageClient {
      */
     public Long update(String path, Long id, Object entity) {
         JsonNode response = postRequest(path + "/" + id.toString(), entity, PUT,
-                                        new ParameterizedTypeReference<JsonNode>() {
-                                        });
+                new ParameterizedTypeReference<JsonNode>() {
+                });
+
+        return response.get("ok").asLong();
+    }
+
+    /**
+     * Removes existing entity in the storage using provided id
+     *
+     * @param path data resource path
+     * @param id   ad id of a record
+     * @return number of deleted records
+     */
+    public Long remove(String path, Long id) {
+        JsonNode response = postRequest(path + "/" + id.toString(), null, DELETE,
+                new ParameterizedTypeReference<JsonNode>() {
+                });
 
         return response.get("ok").asLong();
     }
@@ -301,7 +321,6 @@ public class StorageClient {
         public Type getOwnerType() {
             return delegate.getOwnerType();
         }
-
     }
 
 }
