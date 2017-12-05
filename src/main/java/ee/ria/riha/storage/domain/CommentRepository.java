@@ -17,6 +17,7 @@ import java.util.List;
 public class CommentRepository implements StorageRepository<Long, Comment> {
 
     private static final String COMMENT_PATH = "db/comment";
+    private static final String COMMENT_TYPE_ISSUE_VIEW_PATH = "db/comment_type_issue_view";
 
     private final StorageClient storageClient;
 
@@ -28,6 +29,10 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
     @Override
     public PagedResponse<Comment> list(Pageable pageable, Filterable filterable) {
         return storageClient.list(COMMENT_PATH, pageable, filterable, Comment.class);
+    }
+
+    public PagedResponse<Comment> listIssues(Pageable pageable, Filterable filterable) {
+        return storageClient.list(COMMENT_TYPE_ISSUE_VIEW_PATH, pageable, filterable, Comment.class);
     }
 
     @Override
