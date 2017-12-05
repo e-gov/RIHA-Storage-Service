@@ -10,6 +10,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -32,11 +33,17 @@ public class StorageClient {
     private RestTemplate restTemplate;
     private String baseUrl;
 
-    public StorageClient(RestTemplate restTemplate, String baseUrl) {
-        Assert.notNull(restTemplate, "restTemplate must be provided");
+    public StorageClient(String baseUrl) {
         Assert.notNull(baseUrl, "baseUrl must be provided");
-        this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
+
+        createRestTemplate();
+    }
+
+    private void createRestTemplate() {
+        this.restTemplate = new RestTemplate();
+        this.restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+        this.restTemplate.setErrorHandler(new StorageResponseErrorHandler());
     }
 
     public RestTemplate getRestTemplate() {
@@ -56,30 +63,6 @@ public class StorageClient {
      */
     public <T> List<T> find(String path, Class<T> responseType) {
         return find(path, null, null, responseType);
-    }
-
-    /**
-     * Convenient overload of {@link #find(String, Pageable, Filterable, Class)}
-     *
-     * @param path         data resource path
-     * @param pageable     pagination
-     * @param responseType the type of the returned resource
-     * @return list of found resources
-     */
-    public <T> List<T> find(String path, Pageable pageable, Class<T> responseType) {
-        return find(path, pageable, null, responseType);
-    }
-
-    /**
-     * Convenient overload of {@link #find(String, Pageable, Class)}
-     *
-     * @param path         data resource path
-     * @param filterable   filtering, sorting and fields
-     * @param responseType the type of the returned resource
-     * @return list of found resources
-     */
-    public <T> List<T> find(String path, Filterable filterable, Class<T> responseType) {
-        return find(path, null, filterable, responseType);
     }
 
     /**
@@ -174,24 +157,27 @@ public class StorageClient {
     }
 
     /**
-     * Performs count operation on storage with defined filter.
+     * Convenient overload of {@link #find(String, Pageable, Filterable, Class)}
      *
-     * @param path       data resource path
-     * @param filterable filter definition
-     * @return number of records
-     * @see #find(String, Pageable, Filterable, Class)
+     * @param path         data resource path
+     * @param pageable     pagination
+     * @param responseType the type of the returned resource
+     * @return list of found resources
      */
-    public long count(String path, Filterable filterable) {
-        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
+    public <T> List<T> find(String path, Pageable pageable, Class<T> responseType) {
+        return find(path, pageable, null, responseType);
+    }
 
-        UriComponentsBuilder uriBuilder = createRequestForPathAndOperation(path, COUNT);
-        if (filterable != null && filterable.getFilter() != null) {
-            uriBuilder.queryParam("filter", filterable.getFilter());
-        }
-
-        JsonNode response = restTemplate.getForObject(uriBuilder.build(false).toUriString(), JsonNode.class);
-
-        return response.get("ok").asLong();
+    /**
+     * Convenient overload of {@link #find(String, Pageable, Class)}
+     *
+     * @param path         data resource path
+     * @param filterable   filtering, sorting and fields
+     * @param responseType the type of the returned resource
+     * @return list of found resources
+     */
+    public <T> List<T> find(String path, Filterable filterable, Class<T> responseType) {
+        return find(path, null, filterable, responseType);
     }
 
     /**
@@ -265,6 +251,27 @@ public class StorageClient {
         }
 
         return response;
+    }
+
+    /**
+     * Performs count operation on storage with defined filter.
+     *
+     * @param path       data resource path
+     * @param filterable filter definition
+     * @return number of records
+     * @see #find(String, Pageable, Filterable, Class)
+     */
+    public long count(String path, Filterable filterable) {
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
+
+        UriComponentsBuilder uriBuilder = createRequestForPathAndOperation(path, COUNT);
+        if (filterable != null && filterable.getFilter() != null) {
+            uriBuilder.queryParam("filter", filterable.getFilter());
+        }
+
+        JsonNode response = restTemplate.getForObject(uriBuilder.build(false).toUriString(), JsonNode.class);
+
+        return response.get("ok").asLong();
     }
 
     /**
