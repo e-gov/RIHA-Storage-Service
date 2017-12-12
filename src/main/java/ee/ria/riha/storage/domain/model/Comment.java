@@ -22,6 +22,7 @@ public class Comment {
     private String status;
     private String type;
     private String sub_type;
+    private String resolution_type;
     private String infosystem_short_name;
 
     public Long getComment_id() {
@@ -126,6 +127,14 @@ public class Comment {
 
     public void setSub_type(String sub_type) {
         this.sub_type = sub_type;
+    }
+
+    public String getResolution_type() {
+        return resolution_type;
+    }
+
+    public void setResolution_type(String resolution_type) {
+        this.resolution_type = resolution_type;
     }
 
     public String getInfosystem_short_name() {
