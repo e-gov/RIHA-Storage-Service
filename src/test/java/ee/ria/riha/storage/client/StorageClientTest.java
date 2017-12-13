@@ -5,6 +5,7 @@ import ee.ria.riha.storage.util.PageRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -33,7 +34,8 @@ public class StorageClientTest {
     @Spy
     private RestTemplate restTemplate = mock(RestTemplate.class);
 
-    private StorageClient storageClient = new StorageClient(restTemplate, URL);
+    @InjectMocks
+    private StorageClient storageClient = new StorageClient(URL);
 
     @Before
     public void setUp() {
