@@ -1,19 +1,14 @@
 package ee.ria.riha.storage.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ValueNode;
-import com.fasterxml.jackson.databind.util.RawValue;
 import ee.ria.riha.storage.client.StorageClient;
 import ee.ria.riha.storage.domain.model.MainResource;
 import ee.ria.riha.storage.util.Filterable;
-import ee.ria.riha.storage.util.PageRequest;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
 import org.springframework.util.Assert;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Makes calls against RIHA-Storage and performs translation between main_resource resources and MainResource entities
@@ -34,33 +29,22 @@ public class MainResourceRepository implements StorageRepository<Long, MainResou
 
     @Override
     public PagedResponse<MainResource> list(Pageable pageable, Filterable filterable) {
-        PagedResponse<JsonNode> response = storageClient.list(MAIN_RESOURCE_VIEW_PATH, pageable, filterable,
-                JsonNode.class);
-
-        return new PagedResponse<>(new PageRequest(response.getPage(), response.getSize()),
-                response.getTotalElements(),
-                response.getContent().stream()
-                        .map(json -> new MainResource(json.toString()))
-                        .collect(Collectors.toList()));
+        return storageClient.list(MAIN_RESOURCE_VIEW_PATH, pageable, filterable, MainResource.class);
     }
 
     @Override
     public MainResource get(Long id) {
-        JsonNode mainResource = storageClient.get(MAIN_RESOURCE_PATH, id, JsonNode.class);
-        return mainResource != null ? new MainResource(mainResource.toString()) : null;
+        return storageClient.get(MAIN_RESOURCE_PATH, id, MainResource.class);
     }
 
     @Override
     public List<MainResource> find(Filterable filterable) {
-        return storageClient.find(MAIN_RESOURCE_VIEW_PATH, filterable, JsonNode.class).stream()
-                .map(json -> new MainResource(json.toString()))
-                .collect(Collectors.toList());
+        return storageClient.find(MAIN_RESOURCE_VIEW_PATH, filterable, MainResource.class);
     }
 
     @Override
     public List<Long> add(MainResource mainResource) {
-        ValueNode jsonNode = JsonNodeFactory.instance.rawValueNode(new RawValue(mainResource.getJson_context()));
-        return storageClient.create(MAIN_RESOURCE_PATH, jsonNode);
+        return storageClient.create(MAIN_RESOURCE_PATH, mainResource);
     }
 
     @Override
