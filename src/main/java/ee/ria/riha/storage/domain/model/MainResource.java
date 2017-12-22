@@ -1,27 +1,55 @@
 package ee.ria.riha.storage.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.Date;
+
 /**
- * Holds Information System data as json string.
+ * Model for Main_resource (Information System) entity.
  *
  * @author Valentin Suhnjov
  */
 public class MainResource {
 
-    private String json_context;
+    private Long main_resource_id;
 
-    public MainResource() {
+    @JsonRawValue
+    private JsonNode json_content;
+
+    private String last_positive_approval_request_type;
+
+    private Date last_positive_approval_request_date;
+
+    public Long getMain_resource_id() {
+        return main_resource_id;
     }
 
-    public MainResource(String json_context) {
-        this.json_context = json_context;
+    public void setMain_resource_id(Long main_resource_id) {
+        this.main_resource_id = main_resource_id;
     }
 
-    public String getJson_context() {
-        return json_context;
+    public JsonNode getJson_content() {
+        return json_content;
     }
 
-    public void setJson_context(String json_context) {
-        this.json_context = json_context;
+    public void setJson_content(JsonNode json_content) {
+        this.json_content = json_content;
     }
 
+    public String getLast_positive_approval_request_type() {
+        return last_positive_approval_request_type;
+    }
+
+    public void setLast_positive_approval_request_type(String last_positive_approval_request_type) {
+        this.last_positive_approval_request_type = last_positive_approval_request_type;
+    }
+
+    public Date getLast_positive_approval_request_date() {
+        return last_positive_approval_request_date;
+    }
+
+    public void setLast_positive_approval_request_date(Date last_positive_approval_request_date) {
+        this.last_positive_approval_request_date = last_positive_approval_request_date;
+    }
 }

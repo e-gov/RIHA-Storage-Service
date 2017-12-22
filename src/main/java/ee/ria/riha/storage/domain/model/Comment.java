@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Holds comment entity.
+ * Model for Comment (Issue, Issue comment, Issue event) entity.
  *
  * @author Valentin Suhnjov
  */

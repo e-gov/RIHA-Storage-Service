@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Holds {@link MainResource} relationship information.
+ * Model for {@link MainResource} relationship information.
  *
  * @author Valentin Suhnjov
  */
