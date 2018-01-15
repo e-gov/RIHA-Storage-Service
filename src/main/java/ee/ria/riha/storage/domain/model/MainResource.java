@@ -18,8 +18,10 @@ public class MainResource {
     private JsonNode json_content;
 
     private String last_positive_approval_request_type;
-
     private Date last_positive_approval_request_date;
+    private Date last_positive_establishment_request_date;
+    private Date last_positive_take_into_use_request_date;
+    private Date last_positive_finalization_request_date;
 
     public Long getMain_resource_id() {
         return main_resource_id;
@@ -51,5 +53,29 @@ public class MainResource {
 
     public void setLast_positive_approval_request_date(Date last_positive_approval_request_date) {
         this.last_positive_approval_request_date = last_positive_approval_request_date;
+    }
+
+    public Date getLast_positive_establishment_request_date() {
+        return last_positive_establishment_request_date;
+    }
+
+    public void setLast_positive_establishment_request_date(Date last_positive_establishment_request_date) {
+        this.last_positive_establishment_request_date = last_positive_establishment_request_date;
+    }
+
+    public Date getLast_positive_take_into_use_request_date() {
+        return last_positive_take_into_use_request_date;
+    }
+
+    public void setLast_positive_take_into_use_request_date(Date last_positive_take_into_use_request_date) {
+        this.last_positive_take_into_use_request_date = last_positive_take_into_use_request_date;
+    }
+
+    public Date getLast_positive_finalization_request_date() {
+        return last_positive_finalization_request_date;
+    }
+
+    public void setLast_positive_finalization_request_date(Date last_positive_finalization_request_date) {
+        this.last_positive_finalization_request_date = last_positive_finalization_request_date;
     }
 }
