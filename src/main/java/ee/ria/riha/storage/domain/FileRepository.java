@@ -28,17 +28,38 @@ public class FileRepository {
 
     private final RestTemplate restTemplate;
     private final String baseUrl;
-    private final String fileServiceUrl;
 
     public FileRepository(RestTemplate restTemplate, String baseUrl) {
         Assert.notNull(restTemplate, "restTemplate must be provided");
         Assert.notNull(baseUrl, "baseUrl must be provided");
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
-        this.fileServiceUrl = UriComponentsBuilder.fromHttpUrl(baseUrl).path(FILE_PATH).toUriString();
     }
 
+    /**
+     * Convenience method for file resource upload without association with info system. See {@link #upload(InputStream,
+     * UUID, String, String)} for details.
+     *
+     * @param inputStream file resource input stream
+     * @param fileName    file resource name
+     * @param contentType MIME content type
+     * @return uploaded file resource UUID
+     */
     public UUID upload(InputStream inputStream, String fileName, String contentType) {
+        return upload(inputStream, null, fileName, contentType);
+    }
+
+    /**
+     * Uploads file resource to RIHA-Storage and optionally associates it with info system. File resource is associated
+     * with info system when info system UUID is provided.
+     *
+     * @param inputStream    file resource input stream
+     * @param infoSystemUuid UUID of associated info system or null
+     * @param fileName       file resource name
+     * @param contentType    MIME content type
+     * @return uploaded file resource UUID
+     */
+    public UUID upload(InputStream inputStream, UUID infoSystemUuid, String fileName, String contentType) {
         Assert.notNull(inputStream, "uploaded file input stream must be defined");
         Assert.hasText(fileName, "uploaded file name must be defined");
         Assert.hasText(contentType, "uploaded file content type must be defined");
@@ -51,12 +72,19 @@ public class FileRepository {
         MultiValueMap<String, Object> parts = new LinkedMultiValueMap<>(1);
         parts.add("file", filePart);
 
-        String response = restTemplate.postForObject(fileServiceUrl, new HttpEntity<>(parts, headers), String.class);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(FILE_PATH);
+        if (infoSystemUuid != null) {
+            uriBuilder.queryParam("infoSystemUuid", infoSystemUuid.toString());
+        }
+
+        String response = restTemplate.postForObject(uriBuilder.toUriString(),
+                new HttpEntity<>(parts, headers), String.class);
 
         return UUID.fromString(response);
     }
 
-    private HttpEntity<InputStreamResource> createFilePart(InputStream inputStream, String fileName, String contentType) {
+    private HttpEntity<InputStreamResource> createFilePart(InputStream inputStream, String fileName,
+                                                           String contentType) {
         InputStreamResource part = new MultipartInputStreamFileResource(inputStream, fileName);
 
         HttpHeaders headers = new HttpHeaders();
@@ -65,9 +93,37 @@ public class FileRepository {
         return new HttpEntity<>(part, headers);
     }
 
-    public ResponseEntity download(UUID uuid) throws IOException {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(fileServiceUrl)
-                .path("/").path(uuid.toString());
+    /**
+     * Convenience method for file resource download. See {@link #download(UUID, UUID)} for more details.
+     *
+     * @param fileUuid UUID of file resource
+     * @return file resource response entity
+     * @throws IOException in case of file resource streaming problems
+     */
+    public ResponseEntity download(UUID fileUuid) throws IOException {
+        return download(fileUuid, null);
+    }
+
+    /**
+     * Downloads single file resource from RIHA-Storage. While info system UUID is optional and can be left null, when
+     * provided will match file resource exactly by file resource UUID and info system UUID.
+     *
+     * @param fileUuid       UUID of file resource
+     * @param infoSystemUuid UUID of info system or null if exact matching not required
+     * @return file resource response entity
+     * @throws IOException in case of file resource streaming problems
+     */
+    public ResponseEntity download(UUID fileUuid, UUID infoSystemUuid) throws IOException {
+        Assert.notNull(fileUuid, "downloaded file UUID must be provided");
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(FILE_PATH)
+                .path("/")
+                .path(fileUuid.toString());
+
+        if (infoSystemUuid != null) {
+            uriBuilder.queryParam("infoSystemUuid", infoSystemUuid.toString());
+        }
 
         HttpURLConnection conn = (HttpURLConnection) new URL(uriBuilder.toUriString()).openConnection();
 
@@ -83,7 +139,8 @@ public class FileRepository {
         return builder.body(new InputStreamResource(conn.getInputStream()));
     }
 
-    private void copyHeaderIfPresent(HttpURLConnection urlConnection, ResponseEntity.BodyBuilder responseBuilder, String headerName) {
+    private void copyHeaderIfPresent(HttpURLConnection urlConnection, ResponseEntity.BodyBuilder responseBuilder,
+                                     String headerName) {
         if (urlConnection.getHeaderField(headerName) != null) {
             responseBuilder.header(headerName, urlConnection.getHeaderField(headerName));
         }
