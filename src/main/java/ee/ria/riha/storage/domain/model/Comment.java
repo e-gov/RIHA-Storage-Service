@@ -1,6 +1,7 @@
 package ee.ria.riha.storage.domain.model;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -24,6 +25,8 @@ public class Comment {
     private String sub_type;
     private String resolution_type;
     private String infosystem_short_name;
+    private String infosystem_full_name;
+    private List<Comment> events;
 
     public Long getComment_id() {
         return comment_id;
@@ -143,5 +146,21 @@ public class Comment {
 
     public void setInfosystem_short_name(String infosystem_short_name) {
         this.infosystem_short_name = infosystem_short_name;
+    }
+
+    public String getInfosystem_full_name() {
+        return infosystem_full_name;
+    }
+
+    public void setInfosystem_full_name(String infosystem_full_name) {
+        this.infosystem_full_name = infosystem_full_name;
+    }
+
+    public List<Comment> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<Comment> events) {
+        this.events = events;
     }
 }
