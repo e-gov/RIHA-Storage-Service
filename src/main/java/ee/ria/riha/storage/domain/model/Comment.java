@@ -27,6 +27,7 @@ public class Comment {
     private String infosystem_short_name;
     private String infosystem_full_name;
     private List<Comment> events;
+    private Comment last_comment;
 
     public Long getComment_id() {
         return comment_id;
@@ -162,5 +163,13 @@ public class Comment {
 
     public void setEvents(List<Comment> events) {
         this.events = events;
+    }
+
+    public Comment getLast_comment() {
+        return last_comment;
+    }
+
+    public void setLast_comment(Comment last_comment) {
+        this.last_comment = last_comment;
     }
 }

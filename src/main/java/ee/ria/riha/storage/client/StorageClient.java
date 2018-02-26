@@ -3,6 +3,8 @@ package ee.ria.riha.storage.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import ee.ria.riha.storage.domain.model.Comment;
+import ee.ria.riha.storage.util.CompositeFilterRequest;
 import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
@@ -150,6 +152,42 @@ public class StorageClient {
         return responseEntity.getBody();
     }
 
+    public PagedResponse<Comment> find(String path, CompositeFilterRequest filterRequest, Pageable pageable) {
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(path);
+
+        if (pageable != null) {
+            uriBuilder.queryParam("limit", pageable.getPageSize());
+            uriBuilder.queryParam("offset", pageable.getOffset());
+        }
+
+        if (filterRequest != null) {
+            if (filterRequest.getFilterParameters() != null) {
+                for (String filter : filterRequest.getFilterParameters()) {
+                    if (filter != null) {
+                        uriBuilder.queryParam("filter", filter);
+                    }
+                }
+            }
+
+            if (filterRequest.getSortParameters() != null) {
+                for (String sort : filterRequest.getSortParameters()) {
+                    if (sort != null) {
+                        uriBuilder.queryParam("sort", sort);
+                    }
+                }
+            }
+        }
+
+        ResponseEntity<PagedResponse<Comment>> responseEntity = restTemplate.exchange(uriBuilder.build(false).toUriString(),
+                HttpMethod.GET, null,
+                new ParameterizedTypeReference<PagedResponse<Comment>>() {
+                });
+
+        return responseEntity.getBody();
+    }
+
     private UriComponentsBuilder createRequestForPathAndOperation(String path, OperationType operation) {
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .queryParam("path", path)
@@ -249,6 +287,18 @@ public class StorageClient {
         if (totalElements > 0) {
             response.setContent(find(path, pageable, filterable, responseType));
         }
+
+        return response;
+    }
+
+    public PagedResponse<Comment> list(String path, CompositeFilterRequest filterRequest, Pageable pageable) {
+        Assert.hasText(path, MESSAGE_PATH_MUST_BE_SPECIFIED);
+
+        PagedResponse<Comment> response = new PagedResponse<>(pageable);
+        PagedResponse<Comment> storageResponse = find(path, filterRequest, pageable);
+
+        response.setTotalElements(storageResponse.getTotalElements());
+        response.setContent(storageResponse.getContent());
 
         return response;
     }
