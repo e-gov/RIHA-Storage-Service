@@ -36,6 +36,10 @@ public class PagedResponse<T> {
         this.pageable = pageable;
     }
 
+    public PagedResponse() {
+
+    }
+
     public int getSize() {
         return pageable.getPageSize();
     }
