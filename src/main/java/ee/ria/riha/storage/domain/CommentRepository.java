@@ -2,6 +2,7 @@ package ee.ria.riha.storage.domain;
 
 import ee.ria.riha.storage.client.StorageClient;
 import ee.ria.riha.storage.domain.model.Comment;
+import ee.ria.riha.storage.util.CompositeFilterRequest;
 import ee.ria.riha.storage.util.Filterable;
 import ee.ria.riha.storage.util.Pageable;
 import ee.ria.riha.storage.util.PagedResponse;
@@ -18,6 +19,7 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
 
     private static final String COMMENT_PATH = "db/comment";
     private static final String COMMENT_TYPE_ISSUE_VIEW_PATH = "db/comment_type_issue_view";
+    private static final String DASHBOARD_COMMENT_PATH = "/comment";
 
     private final StorageClient storageClient;
 
@@ -33,6 +35,10 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
 
     public PagedResponse<Comment> listIssues(Pageable pageable, Filterable filterable) {
         return storageClient.list(COMMENT_TYPE_ISSUE_VIEW_PATH, pageable, filterable, Comment.class);
+    }
+
+    public PagedResponse<Comment> listDashboardIssues(Pageable pageable, CompositeFilterRequest filterRequest) {
+        return storageClient.list(DASHBOARD_COMMENT_PATH, filterRequest, pageable);
     }
 
     @Override
