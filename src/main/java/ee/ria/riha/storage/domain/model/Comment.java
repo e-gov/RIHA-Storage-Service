@@ -27,7 +27,12 @@ public class Comment {
     private String infosystem_short_name;
     private String infosystem_full_name;
     private List<Comment> events;
-    private Comment last_comment;
+    private Long last_comment_id;
+    private Long last_comment_parent_id;
+    private Date last_comment_creation_date;
+    private String last_comment_author_name;
+    private String last_comment_organization_name;
+    private String last_comment_organization_code;
 
     public Long getComment_id() {
         return comment_id;
@@ -165,11 +170,51 @@ public class Comment {
         this.events = events;
     }
 
-    public Comment getLast_comment() {
-        return last_comment;
+    public Long getLast_comment_id() {
+        return last_comment_id;
     }
 
-    public void setLast_comment(Comment last_comment) {
-        this.last_comment = last_comment;
+    public void setLast_comment_id(Long last_comment_id) {
+        this.last_comment_id = last_comment_id;
+    }
+
+    public Long getLast_comment_parent_id() {
+        return last_comment_parent_id;
+    }
+
+    public void setLast_comment_parent_id(Long last_comment_parent_id) {
+        this.last_comment_parent_id = last_comment_parent_id;
+    }
+
+    public Date getLast_comment_creation_date() {
+        return last_comment_creation_date;
+    }
+
+    public void setLast_comment_creation_date(Date last_comment_creation_date) {
+        this.last_comment_creation_date = last_comment_creation_date;
+    }
+
+    public String getLast_comment_author_name() {
+        return last_comment_author_name;
+    }
+
+    public void setLast_comment_author_name(String last_comment_author_name) {
+        this.last_comment_author_name = last_comment_author_name;
+    }
+
+    public String getLast_comment_organization_name() {
+        return last_comment_organization_name;
+    }
+
+    public void setLast_comment_organization_name(String last_comment_organization_name) {
+        this.last_comment_organization_name = last_comment_organization_name;
+    }
+
+    public String getLast_comment_organization_code() {
+        return last_comment_organization_code;
+    }
+
+    public void setLast_comment_organization_code(String last_comment_organization_code) {
+        this.last_comment_organization_code = last_comment_organization_code;
     }
 }

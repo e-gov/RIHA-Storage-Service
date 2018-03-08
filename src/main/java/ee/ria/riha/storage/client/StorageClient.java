@@ -158,8 +158,8 @@ public class StorageClient {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(path);
 
         if (pageable != null) {
-            uriBuilder.queryParam("limit", pageable.getPageSize());
-            uriBuilder.queryParam("offset", pageable.getOffset());
+            uriBuilder.queryParam("size", pageable.getPageSize());
+            uriBuilder.queryParam("page", pageable.getPageNumber());
         }
 
         if (filterRequest != null) {
