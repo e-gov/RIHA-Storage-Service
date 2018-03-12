@@ -2,10 +2,7 @@ package ee.ria.riha.storage.domain;
 
 import ee.ria.riha.storage.client.StorageClient;
 import ee.ria.riha.storage.domain.model.Comment;
-import ee.ria.riha.storage.util.CompositeFilterRequest;
-import ee.ria.riha.storage.util.Filterable;
-import ee.ria.riha.storage.util.Pageable;
-import ee.ria.riha.storage.util.PagedResponse;
+import ee.ria.riha.storage.util.*;
 import org.springframework.util.Assert;
 
 import java.util.List;
@@ -37,7 +34,7 @@ public class CommentRepository implements StorageRepository<Long, Comment> {
         return storageClient.list(COMMENT_TYPE_ISSUE_VIEW_PATH, pageable, filterable, Comment.class);
     }
 
-    public PagedResponse<Comment> listDashboardIssues(Pageable pageable, CompositeFilterRequest filterRequest) {
+    public PagedGridResponse<Comment> listDashboardIssues(Pageable pageable, CompositeFilterRequest filterRequest) {
         return storageClient.list(DASHBOARD_COMMENT_PATH, filterRequest, pageable);
     }
 
