@@ -1,8 +1,15 @@
 package ee.ria.riha.storage.domain;
 
+import ee.ria.riha.storage.domain.model.FileResource;
+import ee.ria.riha.storage.util.CompositeFilterRequest;
+import ee.ria.riha.storage.util.Pageable;
+import ee.ria.riha.storage.util.PagedGridResponse;
+import ee.ria.riha.storage.util.StorageRepositoryUriHelper;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -34,6 +41,20 @@ public class FileRepository {
         Assert.notNull(baseUrl, "baseUrl must be provided");
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
+    }
+
+    public PagedGridResponse<FileResource> list(CompositeFilterRequest filterRequest, Pageable pageable) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl).path(FILE_PATH);
+
+        StorageRepositoryUriHelper.setCompositeFilter(uriBuilder, pageable, filterRequest);
+
+        ResponseEntity<PagedGridResponse<FileResource>> responseEntity = restTemplate.exchange(
+                uriBuilder.build(false).toUriString(),
+                HttpMethod.GET, null,
+                new ParameterizedTypeReference<PagedGridResponse<FileResource>>() {
+                });
+
+        return responseEntity.getBody();
     }
 
     /**
