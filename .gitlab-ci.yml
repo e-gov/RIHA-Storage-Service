@@ -18,5 +18,6 @@ build:
     artifacts:
         paths:
             - target/*.jar
+        expire_in: 1 mos
     tags:
         - riha
