@@ -22,6 +22,7 @@ public class MainResource {
     private Date last_positive_establishment_request_date;
     private Date last_positive_take_into_use_request_date;
     private Date last_positive_finalization_request_date;
+    private boolean hasUsedSystemTypeRelations;
 
     public Long getMain_resource_id() {
         return main_resource_id;
@@ -77,5 +78,13 @@ public class MainResource {
 
     public void setLast_positive_finalization_request_date(Date last_positive_finalization_request_date) {
         this.last_positive_finalization_request_date = last_positive_finalization_request_date;
+    }
+
+    public boolean isHasUsedSystemTypeRelations() {
+        return hasUsedSystemTypeRelations;
+    }
+
+    public void setHasUsedSystemTypeRelations(boolean hasUsedSystemTypeRelations) {
+        this.hasUsedSystemTypeRelations = hasUsedSystemTypeRelations;
     }
 }
