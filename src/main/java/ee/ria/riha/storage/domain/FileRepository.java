@@ -160,6 +160,18 @@ public class FileRepository {
         return builder.body(new InputStreamResource(conn.getInputStream()));
     }
 
+    public String createFileResourceFromExisting(UUID existingFileUuid, UUID existingInfoSystemUuid, UUID newInfoSystemUuid) {
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(FILE_PATH)
+                .path("/createFromExisting");
+
+        uriBuilder.queryParam("existingFileUuid", existingFileUuid.toString());
+        uriBuilder.queryParam("existingInfoSystemUuid", existingInfoSystemUuid.toString());
+        uriBuilder.queryParam("newInfoSystemUuid", newInfoSystemUuid.toString());
+
+        return restTemplate.postForObject(uriBuilder.toUriString(), null, String.class);
+    }
+
     private void copyHeaderIfPresent(HttpURLConnection urlConnection, ResponseEntity.BodyBuilder responseBuilder,
                                      String headerName) {
         if (urlConnection.getHeaderField(headerName) != null) {
