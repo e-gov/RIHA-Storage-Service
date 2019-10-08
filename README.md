@@ -2,7 +2,7 @@
 
 # RIHA-Storage-Client
 
-StorageClient is a library for data exchange with [RIHA-Storage](https://github.com/e-gov/RIHA-Storage)
+StorageClient is a library for data exchange with [RIHA-Storage](https://github.com/e-gov/RIHA-Storage).
  
 Currently supported operations are:
 
